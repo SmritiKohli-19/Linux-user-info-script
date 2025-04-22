@@ -1,0 +1,39 @@
+#!/bin/sh -u
+PATH=/bin:/usr/bin ; export PATH
+umask 022
+
+<<Description-of-Script
+This script retreives and displays the  User information for example username, UID(User ID), GID(Group ID), comment field, Home directory, path to shell, and home directory size(inKB). It also displays at the end the current user and current home directory.
+Description-of-Script
+
+#Getting the first argument by a var_name(username) and assigning it a value($1)
+username=$1
+
+#Getting the username from the passwd file using grep and using /dev/null to redirect any error messages.
+user_info=$(grep -i "$username:" /etc/passwd 2>/dev/null)
+
+#Getting values from the /etc/passwd file 
+user=$(echo "$user_info" | cut -d':' -f1)
+uid=$(echo "$user_info" | cut -d':' -f3)
+gid=$(echo "$user_info" | cut -d':' -f4)
+comment=$(echo "$user_info" | cut -d':' -f5)
+homedir=$(echo "$user_info" | cut -d':' -f6)
+Pshell=$(echo "$user_info" | cut -d':' -f7)
+
+#Getting the home directory size in KB using the du command 
+homedir_size=$(du -sk "$homedir" 2>/dev/null | cut -f1)
+
+#Displaying the user information
+echo "Username: $user"
+echo "UID: $uid"
+echo "GID: $gid"
+echo "Comment: $comment"
+echo "Home Directory: $homedir"
+echo "Path to Shell: $Pshell"
+echo "Home Directory Size: $homedir_size KB"
+
+#Displaying the currect user and home directory
+echo "Your User stats:"
+echo " $USER"
+echo " $HOME"
+
